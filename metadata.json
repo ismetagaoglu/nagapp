@@ -1,0 +1,6 @@
+{
+  "name": "Nag",
+  "description": "Israrcı ve hızlı kurulan hatırlatıcı uygulaması",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
