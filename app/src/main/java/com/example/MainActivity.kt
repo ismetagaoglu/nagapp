@@ -55,6 +55,11 @@ import com.example.ui.theme.MyApplicationTheme
 import java.text.SimpleDateFormat
 import java.util.*
 
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
+import com.example.ShortcutActionActivity
+
 class MainActivity : ComponentActivity() {
 
     private val viewModel: NagViewModel by viewModels()
@@ -62,6 +67,27 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Publish dynamic shortcut for custom reminder
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            try {
+                val shortcutManager = getSystemService(ShortcutManager::class.java)
+                val intent = Intent(this, ShortcutActionActivity::class.java).apply {
+                    action = "com.example.ACTION_ADD_CUSTOM"
+                }
+                
+                val shortcut = ShortcutInfo.Builder(this, "dynamic_add_custom")
+                    .setShortLabel("Özel Hatırlatıcı")
+                    .setLongLabel("Özel hatırlatıcı ekle")
+                    .setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher))
+                    .setIntent(intent)
+                    .build()
+                
+                shortcutManager?.dynamicShortcuts = listOf(shortcut)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
 
         // Handle permissions
         val requestPermissionLauncher = registerForActivityResult(
@@ -863,7 +889,7 @@ fun NagAppScreen(
                                         Text("Değiştir", fontSize = 11.sp, color = Color.White)
                                     }
                                 }
-                                
+
                                 Spacer(modifier = Modifier.height(12.dp))
                                 
                                 Row(
@@ -887,6 +913,25 @@ fun NagAppScreen(
                                         )
                                     )
                                 }
+                                
+                                // Cover Screen Instructions
+                                Spacer(modifier = Modifier.height(16.dp))
+                                HorizontalDivider(color = GeoBorderColor)
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Text(
+                                    text = "3. Z FLIP KAPAK EKRANI (COVER SCREEN)",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    color = AccentOrange
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Z Flip kapak ekranında (Flex Window) Durt'u kullanmak için iki seçeneğiniz var:\n\n1. Seçenek (Tam Uygulama): Ayarlar > Gelişmiş Özellikler > Labs bölümünden Durt'a izin verin veya Good Lock uygulamasını (MultiStar) kurarak Durt'u kapak ekranına ekleyin.\n\n2. Seçenek (Widget): Uygulama widget'larını Good Lock (MultiStar) üzerinden Launcher Widget olarak kapak ekranınıza yerleştirebilirsiniz.",
+                                    color = SlateTextMuted,
+                                    fontSize = 11.sp,
+                                    lineHeight = 16.sp
+                                )
                             }
                         }
                     }

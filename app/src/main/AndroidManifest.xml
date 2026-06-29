@@ -29,6 +29,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+
             <!-- Google Assistant / Custom deep links -->
             <intent-filter android:label="Nag Hatırlatıcı Kur">
                 <action android:name="android.intent.action.VIEW" />
@@ -76,6 +80,7 @@
         <!-- Home Screen Widget -->
         <receiver
             android:name=".widget.VoiceWidgetProvider"
+            android:label="Durt Hızlı Ekle"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -113,6 +118,10 @@
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="com.example.ACTION_ADD_REMINDER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.example.ACTION_ADD_CUSTOM" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

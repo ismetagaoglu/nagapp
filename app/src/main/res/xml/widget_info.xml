@@ -5,4 +5,6 @@
     android:updatePeriodMillis="86400000"
     android:initialLayout="@layout/widget_voice"
     android:resizeMode="horizontal"
+    android:previewImage="@mipmap/ic_launcher"
+    android:previewLayout="@layout/widget_voice"
     android:widgetCategory="home_screen|keyguard" />
