@@ -58,7 +58,18 @@ class ReminderReceiver : BroadcastReceiver() {
 
     private fun showNotification(context: Context, reminder: Reminder) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "nag_notifications"
+        val prefs = context.getSharedPreferences("NagPrefs", Context.MODE_PRIVATE)
+        val customUriStr = prefs.getString("custom_ringtone_uri", null)
+        
+        val soundUri = if (customUriStr != null) {
+            android.net.Uri.parse(customUriStr)
+        } else {
+            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        }
+        
+        // Append hash of URI to channel ID so it recreates if user changes sound
+        val channelId = "nag_notifications_${soundUri.hashCode()}"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -72,9 +83,6 @@ class ReminderReceiver : BroadcastReceiver() {
                 vibrationPattern = longArrayOf(0, 500, 200, 500, 200, 500)
                 setBypassDnd(true)
                 
-                // Add default ringtone sound
-                val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                 val audioAttributes = AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .setUsage(AudioAttributes.USAGE_ALARM)
@@ -132,9 +140,6 @@ class ReminderReceiver : BroadcastReceiver() {
             snoozeIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
-        val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)

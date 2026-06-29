@@ -92,6 +92,30 @@
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:exported="false" />
+
+        <!-- Modes & Routines Shortcut Configuration -->
+        <activity
+            android:name=".ShortcutConfigureActivity"
+            android:exported="true"
+            android:label="Durt Hatırlatıcı Ekle">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Invisible Activity to Execute the Shortcut -->
+        <activity
+            android:name=".ShortcutActionActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NagAlarm"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="com.example.ACTION_ADD_REMINDER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

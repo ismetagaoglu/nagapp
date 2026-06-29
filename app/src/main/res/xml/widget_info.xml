@@ -5,4 +5,4 @@
     android:updatePeriodMillis="86400000"
     android:initialLayout="@layout/widget_voice"
     android:resizeMode="horizontal"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen|keyguard" />

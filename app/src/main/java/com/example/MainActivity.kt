@@ -1,12 +1,14 @@
 package com.example
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -722,7 +724,7 @@ fun NagAppScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Uygulama Ayarları & Asistan Rehberi",
+                                        text = "Uygulama Ayarları",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 14.sp,
                                         color = Color.White
@@ -797,6 +799,93 @@ fun NagAppScreen(
                                             Text("İzin Ver", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                         }
                                     }
+                                }
+                                
+                                Spacer(modifier = Modifier.height(16.dp))
+                                HorizontalDivider(color = GeoBorderColor)
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Sound Settings
+                                Text(
+                                    text = "2. BİLDİRİM SESİ AYARLARI",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    color = AccentOrange
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                
+                                val prefs = context.getSharedPreferences("NagPrefs", Context.MODE_PRIVATE)
+                                var isLooping by remember { mutableStateOf(prefs.getBoolean("is_looping_sound", true)) }
+                                var selectedSoundUri by remember { mutableStateOf(prefs.getString("custom_ringtone_uri", null)) }
+
+                                val ringtoneLauncher = rememberLauncherForActivityResult(
+                                    contract = ActivityResultContracts.StartActivityForResult()
+                                ) { result ->
+                                    if (result.resultCode == android.app.Activity.RESULT_OK) {
+                                        @Suppress("DEPRECATION")
+                                        val uri: android.net.Uri? = result.data?.getParcelableExtra(android.media.RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+                                        if (uri != null) {
+                                            prefs.edit().putString("custom_ringtone_uri", uri.toString()).apply()
+                                            selectedSoundUri = uri.toString()
+                                        } else {
+                                            prefs.edit().remove("custom_ringtone_uri").apply()
+                                            selectedSoundUri = null
+                                        }
+                                    }
+                                }
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text("Özel Ses Seç", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                        Text(if (selectedSoundUri != null) "Özel ses ayarlı" else "Varsayılan", color = SlateTextMuted, fontSize = 11.sp)
+                                    }
+                                    Button(
+                                        onClick = {
+                                            val intent = Intent(android.media.RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+                                                putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_TYPE, android.media.RingtoneManager.TYPE_ALL)
+                                                putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+                                                putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
+                                                
+                                                val existingUriStr = prefs.getString("custom_ringtone_uri", null)
+                                                if (existingUriStr != null) {
+                                                    putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, android.net.Uri.parse(existingUriStr))
+                                                }
+                                            }
+                                            ringtoneLauncher.launch(intent)
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                    ) {
+                                        Text("Değiştir", fontSize = 11.sp, color = Color.White)
+                                    }
+                                }
+                                
+                                Spacer(modifier = Modifier.height(12.dp))
+                                
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                                        Text("Uzun Süreli Çal (Döngülü)", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                        Text("Kapatırsanız ses sadece tek sefer çalar (Blink, mesaj sesi vb. için ideal)", color = SlateTextMuted, fontSize = 11.sp, lineHeight = 14.sp)
+                                    }
+                                    Switch(
+                                        checked = isLooping,
+                                        onCheckedChange = { 
+                                            isLooping = it
+                                            prefs.edit().putBoolean("is_looping_sound", it).apply()
+                                        },
+                                        colors = SwitchDefaults.colors(
+                                            checkedThumbColor = Color.White,
+                                            checkedTrackColor = AccentOrange
+                                        )
+                                    )
                                 }
                             }
                         }

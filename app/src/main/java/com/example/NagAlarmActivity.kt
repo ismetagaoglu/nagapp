@@ -88,12 +88,20 @@ class NagAlarmActivity : ComponentActivity() {
 
     private fun startAlarm(context: Context) {
         try {
-            val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val prefs = context.getSharedPreferences("NagPrefs", Context.MODE_PRIVATE)
+            val customUriStr = prefs.getString("custom_ringtone_uri", null)
+            val isLooping = prefs.getBoolean("is_looping_sound", true)
+
+            val soundUri = if (customUriStr != null) {
+                android.net.Uri.parse(customUriStr)
+            } else {
+                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            }
             ringtone = RingtoneManager.getRingtone(context, soundUri)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ringtone?.isLooping = true
+                ringtone?.isLooping = isLooping
             }
             ringtone?.play()
         } catch (e: Exception) {
