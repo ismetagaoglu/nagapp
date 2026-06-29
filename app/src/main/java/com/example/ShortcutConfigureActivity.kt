@@ -111,9 +111,9 @@ class ShortcutConfigureActivity : ComponentActivity() {
 
     private fun createShortcut(title: String, mins: Int) {
         val actionIntent = Intent(this, ShortcutActionActivity::class.java).apply {
-            action = "com.example.ACTION_ADD_REMINDER"
+            action = "com.example.ACTION_ADD_CUSTOM"
             putExtra("EXTRA_TITLE", title)
-            putExtra("EXTRA_MINS", mins)
+            putExtra("EXTRA_MINS", mins.toString())
         }
         
         val shortcutIntent = Intent().apply {

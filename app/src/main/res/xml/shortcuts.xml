@@ -11,8 +11,6 @@
             android:targetPackage="com.aistudio.nag.pxtqv"
             android:targetClass="com.example.ShortcutActionActivity">
         </intent>
-        <categories>
-            <category android:name="android.intent.category.LAUNCHER" />
-        </categories>
+        <categories android:name="android.intent.category.LAUNCHER" />
     </shortcut>
 </shortcuts>

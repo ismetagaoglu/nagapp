@@ -45,10 +45,16 @@ class ShortcutActionActivity : ComponentActivity() {
                     finish()
                 }
             }
-        } else if (intent.action == "com.example.ACTION_ADD_CUSTOM") {
+        } else if (intent.action == "com.example.ACTION_ADD_CUSTOM" || intent.action == Intent.ACTION_SEND) {
             setContent {
-                var title by remember { mutableStateOf("") }
-                var minsStr by remember { mutableStateOf("10") }
+                val initialTitle = intent.getStringExtra(Intent.EXTRA_TEXT) 
+                    ?: intent.getStringExtra("EXTRA_TITLE") 
+                    ?: ""
+                val initialMins = intent.getStringExtra("EXTRA_MINS")?.toIntOrNull()?.toString()
+                    ?: (if (intent.hasExtra("EXTRA_MINS")) intent.getIntExtra("EXTRA_MINS", 10).toString() else "10")
+
+                var title by remember { mutableStateOf(initialTitle) }
+                var minsStr by remember { mutableStateOf(initialMins) }
 
                 Box(
                     modifier = Modifier
