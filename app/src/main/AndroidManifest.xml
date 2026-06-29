@@ -72,6 +72,26 @@
             android:name=".receiver.ActionReceiver"
             android:enabled="true"
             android:exported="false" />
+
+        <!-- Home Screen Widget -->
+        <receiver
+            android:name=".widget.VoiceWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+
+        <!-- Voice Recognition Activity (Transparent) -->
+        <activity
+            android:name=".VoiceActivity"
+            android:theme="@style/Theme.NagAlarm"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:exported="false" />
     </application>
 
 </manifest>
