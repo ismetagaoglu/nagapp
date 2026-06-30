@@ -96,7 +96,7 @@
             android:theme="@style/Theme.NagAlarm"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
-            android:exported="false" />
+            android:exported="true" />
 
         <!-- Modes & Routines Shortcut Configuration -->
         <activity

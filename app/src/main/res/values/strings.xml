@@ -2,4 +2,6 @@
     <string name="app_name">Durt</string>
     <string name="shortcut_short_label">Özel Hatırlatıcı</string>
     <string name="shortcut_long_label">Özel hatırlatıcı ekle</string>
+    <string name="shortcut_voice_short_label">Sesli Giriş</string>
+    <string name="shortcut_voice_long_label">Sesle hatırlatıcı ekle</string>
 </resources>
