@@ -29,10 +29,29 @@ class ShortcutActionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        if (intent.action == "com.example.ACTION_ADD_REMINDER") {
-            val title = intent.getStringExtra("EXTRA_TITLE") ?: "Hatırlatıcı"
-            val mins = intent.getStringExtra("EXTRA_MINS")?.toIntOrNull() 
-                ?: intent.getIntExtra("EXTRA_MINS", 10)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        } else {
+            @Suppress("DEPRECATION")
+            window.addFlags(
+                android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            )
+        }
+
+        val keyguardManager = getSystemService(KEYGUARD_SERVICE) as android.app.KeyguardManager
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            keyguardManager.requestDismissKeyguard(this, null)
+        }
+        
+        if (intent.action == "com.example.ACTION_ADD_REMINDER" || intent.action == "com.example.ACTION_TASKER_REMINDER") {
+            val title = intent.getStringExtra(Intent.EXTRA_TEXT) 
+                ?: intent.getStringExtra("EXTRA_TITLE") 
+                ?: "Tasker Hatırlatıcısı"
+            val minsStr = intent.getStringExtra("EXTRA_MINS")
+            val mins = minsStr?.toIntOrNull() ?: intent.getIntExtra("EXTRA_MINS", 10)
             
             lifecycleScope.launch {
                 val db = AppDatabase.getInstance(applicationContext)
