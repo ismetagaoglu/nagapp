@@ -77,6 +77,16 @@
             android:enabled="true"
             android:exported="false" />
 
+        <receiver
+            android:name=".receiver.TaskerReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.ACTION_TASKER_REMINDER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
         <!-- Home Screen Widget -->
         <receiver
             android:name=".widget.VoiceWidgetProvider"
@@ -134,10 +144,6 @@
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.example.ACTION_TASKER_REMINDER" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>

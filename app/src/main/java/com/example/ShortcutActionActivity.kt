@@ -46,7 +46,7 @@ class ShortcutActionActivity : ComponentActivity() {
             keyguardManager.requestDismissKeyguard(this, null)
         }
         
-        if (intent.action == "com.example.ACTION_ADD_REMINDER" || intent.action == "com.example.ACTION_TASKER_REMINDER") {
+        if (intent.action == "com.example.ACTION_ADD_REMINDER") {
             val textToParse = intent.getStringExtra(Intent.EXTRA_TEXT) 
                 ?: intent.getStringExtra("EXTRA_TITLE") 
                 ?: ""
@@ -54,10 +54,9 @@ class ShortcutActionActivity : ComponentActivity() {
             val defaultMinsStr = intent.getStringExtra("EXTRA_MINS")
             val defaultMins = defaultMinsStr?.toIntOrNull() ?: intent.getIntExtra("EXTRA_MINS", 10)
 
-            val parsed = if (textToParse.isNotBlank()) CommandParser.parse(textToParse) else CommandParser.ParsedCommand("Tasker Hatırlatıcısı", defaultMins, null)
-            val title = parsed.title
-            val mins = if (textToParse.isNotBlank()) parsed.delayMins else defaultMins
-            val repeatMode = parsed.repeatMode
+            val title = if (textToParse.isNotBlank()) textToParse else "Hatırlatıcı"
+            val mins = defaultMins
+            val repeatMode: String? = null
             
             lifecycleScope.launch {
                 val db = AppDatabase.getInstance(applicationContext)
