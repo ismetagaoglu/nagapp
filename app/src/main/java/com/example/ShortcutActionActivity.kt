@@ -47,20 +47,33 @@ class ShortcutActionActivity : ComponentActivity() {
         }
         
         if (intent.action == "com.example.ACTION_ADD_REMINDER" || intent.action == "com.example.ACTION_TASKER_REMINDER") {
-            val title = intent.getStringExtra(Intent.EXTRA_TEXT) 
+            val textToParse = intent.getStringExtra(Intent.EXTRA_TEXT) 
                 ?: intent.getStringExtra("EXTRA_TITLE") 
-                ?: "Tasker Hatırlatıcısı"
-            val minsStr = intent.getStringExtra("EXTRA_MINS")
-            val mins = minsStr?.toIntOrNull() ?: intent.getIntExtra("EXTRA_MINS", 10)
+                ?: ""
+
+            val defaultMinsStr = intent.getStringExtra("EXTRA_MINS")
+            val defaultMins = defaultMinsStr?.toIntOrNull() ?: intent.getIntExtra("EXTRA_MINS", 10)
+
+            val parsed = if (textToParse.isNotBlank()) CommandParser.parse(textToParse) else CommandParser.ParsedCommand("Tasker Hatırlatıcısı", defaultMins, null)
+            val title = parsed.title
+            val mins = if (textToParse.isNotBlank()) parsed.delayMins else defaultMins
+            val repeatMode = parsed.repeatMode
             
             lifecycleScope.launch {
                 val db = AppDatabase.getInstance(applicationContext)
                 val repo = ReminderRepository(applicationContext, db.reminderDao())
                 val targetTime = System.currentTimeMillis() + mins * 60 * 1000L
-                repo.insertReminder(title, targetTime, 60, null)
+                repo.insertReminder(title, targetTime, 60, repeatMode)
                 
+                val repeatStr = when (repeatMode) {
+                    "DAILY" -> " (Her Gün)"
+                    "WEEKLY" -> " (Haftada Bir)"
+                    "MONTHLY" -> " (Ayda Bir)"
+                    else -> ""
+                }
+
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(applicationContext, "'$title' $mins dk sonra için kuruldu!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "'$title' ($mins dk sonra)$repeatStr kuruldu!", Toast.LENGTH_LONG).show()
                     finish()
                 }
             }
